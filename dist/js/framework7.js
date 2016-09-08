@@ -10,7 +10,7 @@
  * 
  * Licensed under MIT
  * 
- * Released on: August 16, 2016
+ * Released on: September 9, 2016
  */
 (function () {
 
@@ -47,6 +47,7 @@
             fastClicks: true,
             fastClicksDistanceThreshold: 10,
             fastClicksDelayBetweenClicks: 50,
+            fastClicksExclude: '', // CSS selector
             // Tap Hold
             tapHold: false,
             tapHoldDelay: 750,
@@ -2177,7 +2178,8 @@
                     next(content);
                 }
             },
-            preroute: function(view, options) {
+            preroute: function(view, options, isBack) {
+                if (isBack) options.isBack = true;
                 app.pluginHook('routerPreroute', view, options);
                 if ((app.params.preroute && app.params.preroute(view, options) === false) || (view && view.params.preroute && view.params.preroute(view, options) === false)) {
                     return true;
@@ -2278,7 +2280,6 @@
                 pushState = options.pushState;
         
             if (typeof animatePages === 'undefined') animatePages = view.params.animatePages;
-        
             // Plugin hook
             app.pluginHook('routerLoad', view, options);
         
@@ -2608,10 +2609,10 @@
         };
         
         app.router.load = function (view, options) {
+            options = options || {};
             if (app.router.preroute(view, options)) {
                 return false;
             }
-            options = options || {};
             var url = options.url;
             var content = options.content;
             var pageName = options.pageName;
@@ -3007,10 +3008,10 @@
         
         };
         app.router.back = function (view, options) {
-            if (app.router.preroute(view, options)) {
+            options = options || {};
+            if (app.router.preroute(view, options, true)) {
                 return false;
             }
-            options = options || {};
             var url = options.url;
             var content = options.content;
             var pageName = options.pageName;
@@ -4013,7 +4014,7 @@
             if (app.params.swipePanel) {
                 panel = $('.panel.panel-' + app.params.swipePanel);
                 side = app.params.swipePanel;
-                if (panel.length === 0) return;
+                if (panel.length === 0 && side !== 'both') return;
             }
             else {
                 if (app.params.swipePanelOnlyClose) {
@@ -4021,7 +4022,7 @@
                 }
                 else return;
             }
-            
+        
             var panelOverlay = $('.panel-overlay');
             var isTouched, isMoved, isScrolling, touchesStart = {}, touchStartTime, touchesDiff, translate, overlayOpacity, opened, panelWidth, effect, direction;
             var views = $('.' + app.params.viewsClass);
@@ -4079,6 +4080,16 @@
                     }
                     else {
                         direction = 'to-left';
+                    }
+        
+                    if(side === 'both'){
+                        if ($('.panel.active').length > 0) {
+                            side = $('.panel.active').hasClass('panel-left') ? 'left' : 'right';
+                        }
+                        else {
+                            side = direction === 'to-right' ? 'left' : 'right';
+                        }
+                        panel = $('.panel.panel-' + side);
                     }
         
                     if (
@@ -6807,6 +6818,7 @@
                 var $el = $(el);
                 if (el.nodeName.toLowerCase() === 'input' && el.type === 'file') return false;
                 if ($el.hasClass('no-fastclick') || $el.parents('.no-fastclick').length > 0) return false;
+                if (app.params.fastClicksExclude && $el.is(app.params.fastClicksExclude)) return false;
                 return true;
             }
             function targetNeedsFocus(el) {
@@ -7807,7 +7819,7 @@
             if (e.type === 'change' && !form.hasClass('ajax-submit-onchange')) return;
             if (e.type === 'submit') e.preventDefault();
             
-            var method = form.attr('method') || 'GET';
+            var method = (form.attr('method') || 'GET').toUpperCase();
             var contentType = form.prop('enctype') || form.attr('enctype');
         
             var url = form.attr('action');
@@ -8090,16 +8102,20 @@
                 pageContainer.on('pageBeforeRemove', destroySwiper);
             }
             swipers.each(function () {
-                var swiper = $(this);
+                var swiper = $(this), initialSlide;
+                var params;
                 if (swiper.hasClass('tabs-swipeable-wrap')) {
                     swiper.addClass('swiper-container').children('.tabs').addClass('swiper-wrapper').children('.tab').addClass('swiper-slide');
+                    initialSlide = swiper.children('.tabs').children('.tab.active').index();
                 }
-                var params;
                 if (swiper.data('swiper')) {
                     params = JSON.parse(swiper.data('swiper'));
                 }
                 else {
                     params = swiper.dataset();
+                }
+                if (typeof params.initialSlide === 'undefined' && typeof initialSlide !== 'undefined') {
+                    params.initialSlide = initialSlide;
                 }
                 if (swiper.hasClass('tabs-swipeable-wrap')) {
                     params.onSlideChangeStart = function (s) {
@@ -8206,7 +8222,7 @@
                 '<div class="navbar">' +
                     '<div class="navbar-inner">' +
                         '<div class="left sliding">' +
-                            '<a href="#" class="link close-popup photo-browser-close-link {{#unless backLinkText}}icon-only{{/unless}} {{js "this.type === \'page\' ? \'back\' : \'\'"}}">' +
+                            '<a href="#" class="link ' + (params.type === 'popup' ? 'close-popup' : 'photo-browser-close-link')+ ' {{#unless backLinkText}}icon-only{{/unless}} {{js "this.type === \'page\' ? \'back\' : \'\'"}}">' +
                                 '<i class="icon icon-back {{iconsColorClass}}"></i>' +
                                 '{{#if backLinkText}}<span>{{backLinkText}}</span>{{/if}}' +
                             '</a>' +
@@ -12021,6 +12037,9 @@
                 }
                 return new Dom7(prevEls);
             },
+            siblings: function (selector) {
+                return this.nextAll(selector).add(this.prevAll(selector));
+            },
             parent: function (selector) {
                 var parents = [];
                 for (var i = 0; i < this.length; i++) {
@@ -12107,6 +12126,18 @@
                     }
                 }
                 return dom;
+            },
+            empty: function () {
+                for (var i = 0; i < this.length; i++) {
+                    var el = this[i];
+                    if (el.nodeType === 1) {
+                        for (var j = 0; j < el.childNodes.length; j++) {
+                            if (el.childNodes[j].parentNode) el.childNodes[j].parentNode.removeChild(el.childNodes[j]);
+                        }
+                        el.textContent = '';
+                    }
+                }
+                return this;
             }
         };
         
@@ -12405,12 +12436,13 @@
         (function () {
             var methods = ('get post getJSON').split(' ');
             function createMethod(method) {
-                $[method] = function (url, data, success) {
+                $[method] = function (url, data, success, error) {
                     return $.ajax({
                         url: url,
                         method: method === 'post' ? 'POST' : 'GET',
                         data: typeof data === 'function' ? undefined : data,
                         success: typeof data === 'function' ? data : success,
+                        error: typeof data === 'function' ? success : error,
                         dataType: method === 'getJSON' ? 'json' : undefined
                     });
                 };
@@ -12423,13 +12455,19 @@
 
         // DOM Library Utilites
         $.parseUrlQuery = function (url) {
+           var url = url || location.href;
             var query = {}, i, params, param;
-            if (url.indexOf('?') >= 0) url = url.split('?')[1];
-            else return query;
-            params = url.split('&');
-            for (i = 0; i < params.length; i++) {
-                param = params[i].split('=');
-                query[param[0]] = param[1];
+        
+            if(typeof url === 'string' && url.length)  {
+                url = (url.indexOf('#') > -1) ? url.split('#')[0] : url;
+                if(url.indexOf('?') > -1) url = url.split('?')[1];
+                else return query;
+        
+                params = url.split('&');
+                for(i = 0; i < params.length; i ++) {
+                    param = params[i].split('=');
+                    query[param[0]] = param[1];
+                }
             }
             return query;
         };
@@ -12845,6 +12883,7 @@
     Template7 Template engine
     ===========================*/
     window.Template7 = (function () {
+        'use strict';
         function isArray(arr) {
             return Object.prototype.toString.apply(arr) === '[object Array]';
         }
@@ -12854,18 +12893,30 @@
         function isFunction(func) {
             return typeof func === 'function';
         }
+        function _escape(string) {
+            return typeof window !== 'undefined' && window.escape ? window.escape(string) : string
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
         var cache = {};
+        var quoteSingleRexExp = new RegExp('\'', 'g');
+        var quoteDoubleRexExp = new RegExp('"', 'g');
         function helperToSlices(string) {
             var helperParts = string.replace(/[{}#}]/g, '').split(' ');
             var slices = [];
             var shiftIndex, i, j;
             for (i = 0; i < helperParts.length; i++) {
                 var part = helperParts[i];
+                var blockQuoteRegExp, openingQuote;
                 if (i === 0) slices.push(part);
                 else {
-                    if (part.indexOf('"') === 0) {
+                    if (part.indexOf('"') === 0 || part.indexOf('\'') === 0) {
+                        blockQuoteRegExp = part.indexOf('"') === 0 ? quoteDoubleRexExp : quoteSingleRexExp;
+                        openingQuote = part.indexOf('"') === 0 ? '"' : '\'';
                         // Plain String
-                        if (part.match(/"/g).length === 2) {
+                        if (part.match(blockQuoteRegExp).length === 2) {
                             // One word string
                             slices.push(part);
                         }
@@ -12874,7 +12925,7 @@
                             shiftIndex = 0;
                             for (j = i + 1; j < helperParts.length; j++) {
                                 part += ' ' + helperParts[j];
-                                if (helperParts[j].indexOf('"') >= 0) {
+                                if (helperParts[j].indexOf(openingQuote) >= 0) {
                                     shiftIndex = j;
                                     slices.push(part);
                                     break;
@@ -12889,18 +12940,18 @@
                             var hashParts = part.split('=');
                             var hashName = hashParts[0];
                             var hashContent = hashParts[1];
-                            if (hashContent.match(/"/g).length !== 2) {
+                            if (hashContent.match(blockQuoteRegExp).length !== 2) {
                                 shiftIndex = 0;
                                 for (j = i + 1; j < helperParts.length; j++) {
                                     hashContent += ' ' + helperParts[j];
-                                    if (helperParts[j].indexOf('"') >= 0) {
+                                    if (helperParts[j].indexOf(openingQuote) >= 0) {
                                         shiftIndex = j;
                                         break;
                                     }
                                 }
                                 if (shiftIndex) i = shiftIndex;
                             }
-                            var hash = [hashName, hashContent.replace(/"/g,'')];
+                            var hash = [hashName, hashContent.replace(blockQuoteRegExp,'')];
                             slices.push(hash);
                         }
                         else {
@@ -12953,7 +13004,7 @@
                             helperContext.push(slice);
                         }
                     }
-                    
+    
                     if (block.indexOf('{#') >= 0) {
                         // Condition/Helper
                         var helperStartIndex = i;
@@ -13023,10 +13074,10 @@
             }
             return blocks;
         }
-        var Template7 = function (template) {
+        var Template7 = function (template, options) {
             var t = this;
             t.template = template;
-            
+    
             function getCompileFn(block, depth) {
                 if (block.content) return compile(block.content, depth);
                 else return function () {return ''; };
@@ -13074,7 +13125,7 @@
                                 variable = part.replace('this', ctx);
                             }
                             else {
-                                variable += '.' + part;       
+                                variable += '.' + part;
                             }
                         }
                     }
@@ -13085,7 +13136,8 @@
             function getCompiledArguments(contextArray, ctx) {
                 var arr = [];
                 for (var i = 0; i < contextArray.length; i++) {
-                    if (contextArray[i].indexOf('"') === 0) arr.push(contextArray[i]);
+                    if (/^['"]/.test(contextArray[i])) arr.push(contextArray[i]);
+                    else if (/^(true|false|\d+)$/.test(contextArray[i])) arr.push(contextArray[i]);
                     else {
                         arr.push(getCompileVar(contextArray[i], ctx));
                     }
@@ -13136,9 +13188,9 @@
                     if (block.type === 'helper') {
                         if (block.helperName in t.helpers) {
                             compiledArguments = getCompiledArguments(block.contextName, ctx);
-                            
+    
                             resultString += 'r += (Template7.helpers.' + block.helperName + ').call(' + ctx + ', ' + (compiledArguments && (compiledArguments + ', ')) +'{hash:' + JSON.stringify(block.hash) + ', data: data || {}, fn: ' + getCompileFn(block, depth + 1) + ', inverse: ' + getCompileInverse(block, depth + 1) + ', root: root});';
-                            
+    
                         }
                         else {
                             if (block.contextName.length > 0) {
@@ -13174,7 +13226,7 @@
                     var p = Template7.prototype.partials[partialName];
                     if (!p || (p && !p.template)) return '';
                     if (!p.compiled) {
-                        p.compiled = t7.compile(p.template);
+                        p.compiled = new Template7(p.template).compile();
                     }
                     var ctx = this;
                     for (var hashName in options.hash) {
@@ -13186,11 +13238,7 @@
                     if (typeof context !== 'string') {
                         throw new Error('Template7: Passed context to "escape" helper should be a string');
                     }
-                    return context
-                            .replace(/&/g, '&amp;')
-                            .replace(/</g, '&lt;')
-                            .replace(/>/g, '&gt;')
-                            .replace(/"/g, '&quot;');
+                    return _escape(context);
                 },
                 'if': function (context, options) {
                     if (isFunction(context)) { context = context.call(this); }
@@ -13264,7 +13312,7 @@
                         return options.fn(this, options.data);
                     }
                     else {
-                        return options.inverse(this, options.data);   
+                        return options.inverse(this, options.data);
                     }
                 }
             }
@@ -13282,7 +13330,7 @@
             Template7.prototype.helpers[name] = fn;
         };
         t7.unregisterHelper = function (name) {
-            Template7.prototype.helpers[name] = undefined;  
+            Template7.prototype.helpers[name] = undefined;
             delete Template7.prototype.helpers[name];
         };
         t7.registerPartial = function (name, template) {
@@ -13294,12 +13342,11 @@
                 delete Template7.prototype.partials[name];
             }
         };
-        
         t7.compile = function (template, options) {
             var instance = new Template7(template, options);
             return instance.compile();
         };
-        
+    
         t7.options = Template7.prototype.options;
         t7.helpers = Template7.prototype.helpers;
         t7.partials = Template7.prototype.partials;
