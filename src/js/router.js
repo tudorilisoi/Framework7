@@ -141,7 +141,8 @@ app.router = {
             next(content);
         }
     },
-    preroute: function(view, options) {
+    preroute: function(view, options, isBack) {
+        if (isBack) options.isBack = true;
         app.pluginHook('routerPreroute', view, options);
         if ((app.params.preroute && app.params.preroute(view, options) === false) || (view && view.params.preroute && view.params.preroute(view, options) === false)) {
             return true;
@@ -242,7 +243,6 @@ app.router._load = function (view, options) {
         pushState = options.pushState;
 
     if (typeof animatePages === 'undefined') animatePages = view.params.animatePages;
-
     // Plugin hook
     app.pluginHook('routerLoad', view, options);
 
@@ -572,10 +572,10 @@ app.router._load = function (view, options) {
 };
 
 app.router.load = function (view, options) {
+    options = options || {};
     if (app.router.preroute(view, options)) {
         return false;
     }
-    options = options || {};
     var url = options.url;
     var content = options.content;
     var pageName = options.pageName;
@@ -971,10 +971,10 @@ app.router._back = function (view, options) {
 
 };
 app.router.back = function (view, options) {
-    if (app.router.preroute(view, options)) {
+    options = options || {};
+    if (app.router.preroute(view, options, true)) {
         return false;
     }
-    options = options || {};
     var url = options.url;
     var content = options.content;
     var pageName = options.pageName;
