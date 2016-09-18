@@ -913,7 +913,7 @@ app.router._back = function (view, options) {
             setPages();
             return;
         }
-        else if (pageName) {
+        else if (pageName && pageName!=='undefined') {
             // Get dom cached pages
             newPage = $(viewContainer).find('.page[data-page="' + pageName + '"]');
             if (view.params.dynamicNavbar) {
