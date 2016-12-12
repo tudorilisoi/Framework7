@@ -13,7 +13,10 @@
         margin: 0;
         position: relative;
         .hairline(top, @listBlockBorderColor);
-        .hairline(bottom, @listBlockBorderColor);
+	  
+	     //remove bottom hairline by making it transparent
+        //.hairline(bottom, @listBlockBorderColor);
+        .hairline(bottom, transparent);
         ul {
             .hairline-remove(top);
             .hairline-remove(bottom);
