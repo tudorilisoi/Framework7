@@ -104,7 +104,7 @@ var VirtualList = function (listBlock, params) {
             }
         }
         else {
-            listHeight = Math.ceil(items.length /  vl.params.cols) * vl.params.height;
+            listHeight = items.length * vl.params.height / vl.params.cols;
             rowsPerScreen = Math.ceil(pageHeight / vl.params.height);
             rowsBefore = vl.params.rowsBefore || rowsPerScreen * 2;
             rowsAfter = vl.params.rowsAfter || rowsPerScreen;
