@@ -57,7 +57,7 @@ select {
 }
 a {
   text-decoration: none;
-  color: #4a86e8;
+  color: rgb(0, 78, 152);
 }
 p {
   margin: 1em 0;
@@ -1433,7 +1433,7 @@ html.pixel-ratio-3 .toolbar:before {
   color: #929292;
 }
 .tabbar a.active {
-  color: #4a86e8;
+  color: rgb(0, 78, 152);
 }
 .tabbar a.link {
   line-height: 1.4;
@@ -2538,7 +2538,7 @@ html:not(.watch-active-state) .list-block .item-link:active .item-inner:after,
 .list-block .item-link.list-button {
   padding: 0 15px;
   text-align: center;
-  color: #4a86e8;
+  color: rgb(0, 78, 152);
   display: block;
   line-height: 43px;
 }
@@ -3071,8 +3071,8 @@ html.android .label-switch input[type="checkbox"] + .checkbox:before {
   transition-duration: 0;
 }
 .button {
-  border: 1px solid #4a86e8;
-  color: #4a86e8;
+  border: 1px solid rgb(0, 78, 152);
+  color: rgb(0, 78, 152);
   text-decoration: none;
   text-align: center;
   display: block;
@@ -3108,7 +3108,7 @@ html:not(.watch-active-state) .button:active,
   border-radius: 27px;
 }
 .button.active {
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   color: #fff;
 }
 .button.button-big {
@@ -3118,7 +3118,7 @@ html:not(.watch-active-state) .button:active,
 }
 .button.button-fill {
   color: #fff;
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   border: none;
 }
 html:not(.watch-active-state) .button.button-fill:active,
@@ -3254,7 +3254,7 @@ html:not(.watch-active-state) .button.button-fill:active,
   height: 2px;
   margin-top: -1px;
   z-index: 1;
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   content: ' ';
 }
 .range-slider input[type="range"]::-moz-range-track {
@@ -3303,7 +3303,7 @@ html:not(.watch-active-state) .button.button-fill:active,
   top: 50%;
 }
 .range-slider input[type="range"]::-ms-fill-lower {
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
 }
 .range-slider input[type="range"]::-ms-fill-upper {
   background: #b7b8b7;
@@ -3336,7 +3336,7 @@ label.label-checkbox input[type="radio"] {
 label.label-checkbox input[type="checkbox"]:checked + .item-media i.icon-form-checkbox,
 label.label-checkbox input[type="radio"]:checked + .item-media i.icon-form-checkbox {
   border: none;
-  background-color: #4a86e8;
+  background-color: rgb(0, 78, 152);
 }
 label.label-checkbox input[type="checkbox"]:checked + .item-media i.icon-form-checkbox:after,
 label.label-checkbox input[type="radio"]:checked + .item-media i.icon-form-checkbox:after {
@@ -3787,7 +3787,7 @@ html.ios-gt-8 .modal-title {
   font-size: 17px;
   line-height: 44px;
   text-align: center;
-  color: #4a86e8;
+  color: rgb(0, 78, 152);
   display: block;
   position: relative;
   white-space: nowrap;
@@ -4018,7 +4018,7 @@ html.ios-gt-8 .actions-modal-label.actions-modal-button-bold {
   height: 57px;
   line-height: 57px;
   font-size: 20px;
-  color: #4a86e8;
+  color: rgb(0, 78, 152);
   white-space: normal;
   text-overflow: ellipsis;
 }
@@ -4939,7 +4939,7 @@ html.with-statusbar-overlay body .panel {
 }
 .progressbar span {
   width: 100%;
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   height: 100%;
   position: absolute;
   left: 0;
@@ -4956,7 +4956,7 @@ html.with-statusbar-overlay body .panel {
   top: 0;
   width: 100%;
   height: 100%;
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
   -webkit-transform-origin: left center;
@@ -4977,8 +4977,8 @@ html.with-statusbar-overlay body > .progressbar-infinite {
   top: 0;
   width: 400%;
   height: 100%;
-  background-image: -webkit-linear-gradient(left, #4cd964, #5ac8fa, #4a86e8, #34aadc, #5856d6, #ff2d55, #5856d6, #34aadc, #4a86e8, #5ac8fa, #4cd964);
-  background-image: linear-gradient(to right, #4cd964, #5ac8fa, #4a86e8, #34aadc, #5856d6, #ff2d55, #5856d6, #34aadc, #4a86e8, #5ac8fa, #4cd964);
+  background-image: -webkit-linear-gradient(left, #4cd964, #5ac8fa, rgb(0, 78, 152), #34aadc, #5856d6, #ff2d55, #5856d6, #34aadc, rgb(0, 78, 152), #5ac8fa, #4cd964);
+  background-image: linear-gradient(to right, #4cd964, #5ac8fa, rgb(0, 78, 152), #34aadc, #5856d6, #ff2d55, #5856d6, #34aadc, rgb(0, 78, 152), #5ac8fa, #4cd964);
   background-size: 25% 100%;
   background-repeat: repeat-x;
   -webkit-transform: translate3d(0, 0, 0);
@@ -5423,7 +5423,7 @@ button.swiper-pagination-bullet {
 }
 .swiper-pagination-bullet-active {
   opacity: 1;
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
 }
 .swiper-container-vertical > .swiper-pagination-bullets {
   right: 10px;
@@ -5447,7 +5447,7 @@ button.swiper-pagination-bullet {
   position: absolute;
 }
 .swiper-pagination-progress .swiper-pagination-progressbar {
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   position: absolute;
   left: 0;
   top: 0;
@@ -6334,7 +6334,7 @@ html.pixel-ratio-3 .picker-calendar-row:after {
   background: #e3e3e3;
 }
 .picker-calendar-day.picker-calendar-day-selected span {
-  background: #4a86e8;
+  background: rgb(0, 78, 152);
   color: #fff;
 }
 .picker-calendar-day.picker-calendar-day-has-events span:after {

@@ -4,13 +4,13 @@
  * 
  * http://www.idangero.us/framework7
  * 
- * Copyright 2016, Vladimir Kharlampidi
+ * Copyright 2017, Vladimir Kharlampidi
  * The iDangero.us
  * http://www.idangero.us/
  * 
  * Licensed under MIT
  * 
- * Released on: December 13, 2016
+ * Released on: June 4, 2017
  */
 (function () {
 
